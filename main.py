@@ -7,10 +7,15 @@ from src.screen_capture import capture_screen
 from src.aim_logic import aim, shoot
 from src.detection import get_centroids, select_target
 
+# load the model from teh specified path
 model = YOLO(MODEL_PATH)
 
+# main entry point of the script
 if __name__ == '__main__':
+    # create the detections directory if it doesn't exist
     os.makedirs(DETECTIONS_DIR, exist_ok=True)
+
+    # define the screen center based on configuration constants
     screen_center = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
     current_target = None
 
@@ -33,7 +38,7 @@ if __name__ == '__main__':
             local_x, local_y = target[0], target[1]
             absolute_x = offset_left + local_x
             absolute_y = offset_top + local_y
-            print(f"[+] Aiming at local: ({local_x},{local_y}), absoluto: ({absolute_x},{absolute_y})")
+            print(f"[+] Aiming at local: ({local_x},{local_y}), absolut: ({absolute_x},{absolute_y})")
             aim(absolute_x, absolute_y)
             shoot()
             cv2.line(img, screen_center, (local_x, local_y), (0, 0, 255), 2)
@@ -45,4 +50,4 @@ if __name__ == '__main__':
 
         result_path = os.path.join(DETECTIONS_DIR, f"result_{int(time.time())}.jpg")
         cv2.imwrite(result_path, combined_frame)
-        print(f"Frame salvo em: {result_path}")
+        print(f"[+] Saved frame @ {result_path}")
