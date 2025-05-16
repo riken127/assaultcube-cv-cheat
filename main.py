@@ -6,6 +6,7 @@ from src.config import *
 from src.screen_capture import capture_screen
 from src.aim_logic import aim, shoot
 from src.detection import get_centroids, select_target
+import pydirectinput
 
 # load the model from teh specified path
 model = YOLO(MODEL_PATH)
@@ -27,6 +28,24 @@ if __name__ == '__main__':
         detections = results[0].boxes.xyxy.cpu().numpy()
         classes = results[0].boxes.cls.cpu().numpy()
         centroids = get_centroids(detections, classes)
+
+        enemy_sizes = []
+        for i, box in enumerate(detections):
+            x1, y1, x2, y2 = box
+            class_id = int(classes[i])
+            if class_id in [2, 3]:
+                size = (x2 - x1) * (y2 - y1)
+                enemy_sizes.append(size)
+        should_walk = False
+        if enemy_sizes:
+            min_enemy_size = min(enemy_sizes)
+            if min_enemy_size < MIN_ENEMY_SIZE:
+                should_walk = True
+
+        if should_walk:
+            pydirectinput.keyDown('w')
+        else:
+            pydirectinput.keyUp('w')
 
         target = select_target(centroids, screen_center)
         if current_target and current_target in centroids:
