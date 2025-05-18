@@ -14,7 +14,7 @@ SECONDARY_IN_MAG_OFFSET = 0x108
 
 PROCESS_ALL_ACCESS = 0x1F0FFF
 
-# Estrutura para módulo (simplificada para 64-bit segura)
+# Estrutura  (simplificada para 64-bit segura)
 class MODULEENTRY32(ctypes.Structure):
     _fields_ = [
         ('dwSize', wintypes.DWORD),
@@ -98,10 +98,10 @@ def read_memory(process_handle, address, size=4):
     ctypes.windll.kernel32.ReadProcessMemory(process_handle, ctypes.c_void_p(address), buffer, size, ctypes.byref(bytes_read))
     return int.from_bytes(buffer.raw, byteorder="little")
 
-def log_to_csv(data, log_file="memory_log.csv"):
-    with open(log_file, "a", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(data)
+#def log_to_csv(data, log_file="memory_log.csv"):
+#    with open(log_file, "a", newline="") as f:
+#        writer = csv.writer(f)
+#        writer.writerow(data)
 
 def main():
     try:
@@ -127,10 +127,10 @@ def main():
                 secondary_ammo,
                 secondary_in_mag
             ]
-            log_to_csv(log_entry)
+#            log_to_csv(log_entry)
             sock.sendto(str(log_entry).encode(), server_address)
 
-            time.sleep(1)
+            time.sleep(0.2)
     except Exception as e:
         print(f"[ERRO] {e}")
 
