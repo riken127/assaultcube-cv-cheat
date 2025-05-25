@@ -7,7 +7,7 @@ from src.screen_capture import capture_screen
 from src.aim_logic import aim, shoot
 from src.detection import get_centroids, select_target
 from src.reload_model import ReloadPredictor
-import pydirectinput
+from src.walk_logic import walk_forward, should_walk
 
 # load the model from teh specified path
 model = YOLO(MODEL_PATH)
@@ -41,16 +41,9 @@ if __name__ == '__main__':
             if class_id in [2, 3]:
                 size = (x2 - x1) * (y2 - y1)
                 enemy_sizes.append(size)
-        should_walk = False
-        if enemy_sizes:
-            min_enemy_size = min(enemy_sizes)
-            if min_enemy_size < MIN_ENEMY_SIZE:
-                should_walk = True
 
-        if should_walk:
-            pydirectinput.keyDown('w')
-        else:
-            pydirectinput.keyUp('w')
+        if should_walk(enemy_sizes, MIN_ENEMY_SIZE):
+            walk_forward()
 
         target = select_target(centroids, screen_center)
         if current_target and current_target in centroids:
@@ -62,7 +55,6 @@ if __name__ == '__main__':
             local_x, local_y = target[0], target[1]
             absolute_x = offset_left + local_x
             absolute_y = offset_top + local_y
-            #print(f"[+] Aiming at local: ({local_x},{local_y}), absolut: ({absolute_x},{absolute_y})")
             aim(absolute_x, absolute_y)
             shoot()
             cv2.line(img, screen_center, (local_x, local_y), (0, 0, 255), 2)
@@ -74,4 +66,3 @@ if __name__ == '__main__':
 
         result_path = os.path.join(DETECTIONS_DIR, f"result_{int(time.time())}.jpg")
         cv2.imwrite(result_path, combined_frame)
-        #print(f"[+] Saved frame @ {result_path}")

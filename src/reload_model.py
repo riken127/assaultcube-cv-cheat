@@ -94,7 +94,7 @@ class ReloadPredictor:
             # If no prediction is available, assume no reload is needed
             print(f"[+] LSTM N/a NO RELOAD {prediction:.2f}")
             return False
-        if prediction > 0.55:
+        if prediction > 0.71:
             # If the prediction score is above 55%, suggest a reload
             print(f"[+] LSTM suggested RELOAD {prediction:.2f}")
 

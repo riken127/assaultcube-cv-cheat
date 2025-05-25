@@ -25,5 +25,3 @@ def aim(x, y, delay=AIM_DELAY, sensitivity_scale=SENSITIVITY_SCALE):
 def shoot():
     # Calls the custom win32 based function.
     click_mouse()
-    # gives time for the system or application to register input
-    time.sleep(0.1)
