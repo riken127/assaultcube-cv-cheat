@@ -6,10 +6,12 @@ from src.config import *
 from src.screen_capture import capture_screen
 from src.aim_logic import aim, shoot
 from src.detection import get_centroids, select_target
+from src.reload_model import ReloadPredictor
 import pydirectinput
 
 # load the model from teh specified path
 model = YOLO(MODEL_PATH)
+reload_predictor = ReloadPredictor()
 
 # main entry point of the script
 if __name__ == '__main__':
@@ -28,6 +30,9 @@ if __name__ == '__main__':
         detections = results[0].boxes.xyxy.cpu().numpy()
         classes = results[0].boxes.cls.cpu().numpy()
         centroids = get_centroids(detections, classes)
+
+        print(centroids.count)
+        prediction = reload_predictor.should_reload(len(centroids) != 0)
 
         enemy_sizes = []
         for i, box in enumerate(detections):
@@ -57,7 +62,7 @@ if __name__ == '__main__':
             local_x, local_y = target[0], target[1]
             absolute_x = offset_left + local_x
             absolute_y = offset_top + local_y
-            print(f"[+] Aiming at local: ({local_x},{local_y}), absolut: ({absolute_x},{absolute_y})")
+            #print(f"[+] Aiming at local: ({local_x},{local_y}), absolut: ({absolute_x},{absolute_y})")
             aim(absolute_x, absolute_y)
             shoot()
             cv2.line(img, screen_center, (local_x, local_y), (0, 0, 255), 2)
@@ -69,4 +74,4 @@ if __name__ == '__main__':
 
         result_path = os.path.join(DETECTIONS_DIR, f"result_{int(time.time())}.jpg")
         cv2.imwrite(result_path, combined_frame)
-        print(f"[+] Saved frame @ {result_path}")
+        #print(f"[+] Saved frame @ {result_path}")

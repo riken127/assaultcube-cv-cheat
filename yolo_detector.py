@@ -8,14 +8,11 @@ from src.screen_capture import capture_screen
 from ultralytics import YOLO
 from src.config import MODEL_PATH, CONFIDENCE
 
-# Configura o modelo YOLO
 model = YOLO(MODEL_PATH)
 
-# Socket UDP para receber dados do script de memória
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(("127.0.0.1", 5005))
 
-# Estado partilhado
 last_action_time = time.time()
 last_action = "hold"
 latest_memory_data = None
@@ -42,7 +39,6 @@ def receive_memory_data_loop():
         data, _ = sock.recvfrom(1024)
         with lock:
             latest_memory_data = eval(data.decode())
-            # Guarda timestamp + health atual para histórico
             timestamp = latest_memory_data[0]
             health = latest_memory_data[1]
             health_history.append((timestamp, health))
